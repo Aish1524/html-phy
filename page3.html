@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo left" >VLab</div>
+        <div class="logo right">
+            <img src="./images/logo.png" width="125px"/>
+        </div>
+    </header>
+    <main>
+        <h1 class="main-title">LASER GRATING</h1><hr>
+        <h2 class="sub-title">Simulation</h2>
+        <p class="content"></p>
+    </main>
+    <p>Explore the behavior of light as it passes through a diffraction grating. Customize parameters and visualize in real-time.</p>
+
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle">Switch to Dark Mode</button>
+  
+    <!-- Interactive Controls -->
+    <div class="controls">
+      <label for="wavelength">Wavelength (nm):</label>
+      <input type="range" id="wavelength" min="400" max="700" value="550" step="10">
+      <span id="wavelengthValue">550</span> nm
+  
+      <label for="gratingDensity">Grating Density (lines/mm):</label>
+      <div class="adjust-buttons">
+        <button id="decreaseGratingDensity">-10</button>
+        <input type="range" id="gratingDensity" min="100" max="2000" value="500" step="10">
+        <button id="increaseGratingDensity">+10</button>
+      </div>
+      <span id="gratingDensityValue">500</span> lines/mm
+  
+      <label for="screenDistance">Screen Distance (cm):</label>
+      <input type="range" id="screenDistance" min="10" max="85" value="50" step="5">
+      <span id="screenDistanceValue">50</span> cm
+    </div>
+  
+    <!-- Main View Canvas -->
+    <canvas id="simulationCanvas" width="900" height="300"></canvas>
+  
+    <!-- Scale View Canvas -->
+    <h2>Scale View</h2>
+    <canvas id="scaleCanvas" width="1200" height="150"></canvas>
+  
+    <script src="script.js"></script>
+    <a href="./sim.html">Link to Version 2.0 with accurate values for observation table.</a>
+</body>
+</html>

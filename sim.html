@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diffraction Grating Simulation</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin: 20px auto;
+    }
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Diffraction Grating Simulation</h1>
+  <canvas id="simulationCanvas" width="800" height="400"></canvas>
+  <br>
+  <label>
+    Wavelength (nm):
+    <input id="wavelengthInput" type="number" value="500" min="380" max="700">
+  </label>
+  <label>
+    Grating Density (lines/mm):
+    <input id="gratingDensityInput" type="number" value="600" min="100" max="2000">
+  </label>
+  <label>
+    Screen Distance (cm):
+    <input id="screenDistanceInput" type="number" value="50" min="10" max="200">
+  </label>
+  <button onclick="drawMainSimulation()">Update</button>
+  <h2>Distances of Dots from Center (in cm)</h2>
+  <ul id="distanceList"></ul>
+
+  <script>
+    // Canvas setup
+    const simulationCanvas = document.getElementById('simulationCanvas');
+    const ctxSim = simulationCanvas.getContext('2d');
+
+    // Inputs
+    const wavelengthInput = document.getElementById('wavelengthInput');
+    const gratingDensityInput = document.getElementById('gratingDensityInput');
+    const screenDistanceInput = document.getElementById('screenDistanceInput');
+
+    // Distance list
+    const distanceList = document.getElementById('distanceList');
+
+    // Variables
+    let wavelength = Number(wavelengthInput.value); // nm
+    let gratingDensity = Number(gratingDensityInput.value); // lines/mm
+    let screenDistance = Number(screenDistanceInput.value); // cm
+
+    // Event listeners to update values
+    wavelengthInput.addEventListener('input', () => wavelength = Number(wavelengthInput.value));
+    gratingDensityInput.addEventListener('input', () => gratingDensity = Number(gratingDensityInput.value));
+    screenDistanceInput.addEventListener('input', () => screenDistance = Number(screenDistanceInput.value));
+
+    // Function to draw the simulation
+    function drawMainSimulation() {
+      ctxSim.clearRect(0, 0, simulationCanvas.width, simulationCanvas.height);
+
+      const width = simulationCanvas.width;
+      const height = simulationCanvas.height;
+
+      // Convert values
+      const wavelengthMeters = wavelength * 1e-9;
+      const gratingSpacing = 1 / (gratingDensity * 1e3); // d in meters
+
+      // Define key positions
+      const centerX = width / 6; // Grating center (left)
+      const centerY = height / 2; // Canvas vertical center
+      const screenX = (5 * width) / 6; // Screen position (right)
+
+      const scale = 150; // Scale for distance calculation
+      const maxOrder = 10; // Maximum diffraction order
+
+      distanceList.innerHTML = ""; // Clear the list
+
+      for (let m = -maxOrder; m <= maxOrder; m++) {
+        const sinTheta = m * wavelengthMeters / gratingSpacing;
+
+        // Only draw valid orders (where sinTheta <= 1)
+        if (Math.abs(sinTheta) <= 1) {
+          const theta = Math.asin(sinTheta); // Angle of diffraction
+          const beamY = centerY + Math.tan(theta) * (screenDistance * scale) / 100;
+
+          // Calculate distance from center dot
+          const distanceFromCenter = (screenDistance * Math.tan(theta)).toFixed(2);
+
+          // Add distance to the list
+          const li = document.createElement('li');
+          li.textContent = `Order ${m}: ${distanceFromCenter} cm`;
+          distanceList.appendChild(li);
+
+          // Set the color of the beam and dot
+          const dotColor = `rgb(${Math.min(255, wavelength - 400)}, ${Math.max(0, 700 - wavelength)}, 255)`;
+
+          // Draw the laser beam from center to the dot
+          ctxSim.strokeStyle = dotColor;
+          ctxSim.lineWidth = m === 0 ? 2 : 1; // Highlight center beam
+          ctxSim.beginPath();
+          ctxSim.moveTo(centerX, centerY); // Start from the grating's center
+          ctxSim.lineTo(screenX, beamY); // Draw to the diffraction dot
+          ctxSim.stroke();
+
+          // Draw the dot
+          ctxSim.fillStyle = dotColor;
+          ctxSim.beginPath();
+          ctxSim.arc(screenX, beamY, 5, 0, 2 * Math.PI);
+          ctxSim.fill();
+        }
+      }
+
+      // Draw centerline for reference
+      ctxSim.strokeStyle = "gray";
+      ctxSim.lineWidth = 1;
+      ctxSim.beginPath();
+      ctxSim.moveTo(centerX, centerY);
+      ctxSim.lineTo(screenX, centerY);
+      ctxSim.stroke();
+    }
+
+    // Initial draw
+    drawMainSimulation();
+  </script>
+</body>
+</html>
